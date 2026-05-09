@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ReleaseSpark — Changelog Generator from GitHub Commits</title>
+  <meta name="description" content="Turn your GitHub commits into clean, organized changelogs instantly. Zero config, no login required for public repos." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            spark: {
+              50: '#fff7ed',
+              100: '#ffedd5',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+              900: '#431407'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    code, pre, .mono { font-family: 'JetBrains Mono', monospace; }
+    .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); }
+    .card-glow { box-shadow: 0 0 0 1px rgba(249,115,22,0.15), 0 4px 24px rgba(249,115,22,0.08); }
+    .tag-feat { background: #dcfce7; color: #15803d; }
+    .tag-fix  { background: #fee2e2; color: #b91c1c; }
+    .tag-docs { background: #dbeafe; color: #1d4ed8; }
+    .tag-chore{ background: #f3f4f6; color: #6b7280; }
+    .tag-break{ background: #fef3c7; color: #d97706; }
+    .tag-perf { background: #ede9fe; color: #7c3aed; }
+    .tag-style{ background: #fce7f3; color: #be185d; }
+    .tag-test { background: #e0f2fe; color: #0369a1; }
+    .fade-in { animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .copy-btn:active { transform: scale(0.96); }
+    textarea:focus { outline: none; box-shadow: 0 0 0 2px rgba(249,115,22,0.4); }
+    input:focus { outline: none; box-shadow: 0 0 0 2px rgba(249,115,22,0.4); }
+  </style>
+</head>
+<body class="gradient-bg min-h-screen text-white">
+
+  <!-- NAV -->
+  <nav class="border-b border-white/10 px-6 py-4 flex items-center justify-between max-w-7xl mx-auto">
+    <div class="flex items-center gap-2">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="#f97316" stroke="#f97316" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+      <span class="font-bold text-xl tracking-tight">ReleaseSpark</span>
+    </div>
+    <div class="flex items-center gap-4 text-sm text-slate-400">
+      <a href="#how" class="hover:text-white transition">How it works</a>
+      <a href="https://github.com/AlfonsoCifuentes/releasespark" target="_blank" class="hover:text-white transition flex items-center gap-1">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="max-w-4xl mx-auto px-6 pt-16 pb-12 text-center">
+    <div class="inline-flex items-center gap-2 bg-spark-500/10 border border-spark-500/30 rounded-full px-4 py-1.5 text-spark-500 text-sm font-medium mb-6">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      Free for public repos · No login required
+    </div>
+    <h1 class="text-5xl md:text-6xl font-extrabold mb-5 leading-tight">
+      Turn commits into<br/>
+      <span class="text-transparent bg-clip-text" style="background-image: linear-gradient(90deg, #f97316, #fb923c)">clean changelogs</span>
+    </h1>
+    <p class="text-xl text-slate-400 max-w-2xl mx-auto mb-10">
+      Paste a GitHub repo URL, pick your commit range, and get a professional changelog in seconds. No CLI, no setup, no auth needed.
+    </p>
+  </section>
+
+  <!-- MAIN APP -->
+  <main class="max-w-4xl mx-auto px-6 pb-20">
+    
+    <!-- INPUT CARD -->
+    <div class="bg-slate-900/60 backdrop-blur border border-white/10 rounded-2xl p-6 mb-6 card-glow">
+      <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
+        <svg width="20" height="20" fill="none" stroke="#f97316" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        Generate Changelog
+      </h2>
+      
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm text-slate-400 mb-1.5">GitHub Repository URL</label>
+          <input 
+            id="repoUrl" 
+            type="text" 
+            placeholder="https://github.com/facebook/react" 
+            class="w-full bg-slate-800 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-slate-500 text-sm mono transition"
+          />
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm text-slate-400 mb-1.5">From (branch/tag/commit)</label>
+            <input 
+              id="fromRef" 
+              type="text" 
+              placeholder="v1.0.0  or  main"
+              class="w-full bg-slate-800 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-slate-500 text-sm mono transition"
+            />
+          </div>
+          <div>
+            <label class="block text-sm text-slate-400 mb-1.5">To (branch/tag/commit)</label>
+            <input 
+              id="toRef" 
+              type="text" 
+              placeholder="HEAD  or  v2.0.0"
+              class="w-full bg-slate-800 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-slate-500 text-sm mono transition"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm text-slate-400 mb-1.5">Max commits to fetch</label>
+          <select id="maxCommits" class="bg-slate-800 border border-white/10 rounded-lg px-4 py-3 text-white text-sm transition cursor-pointer">
+            <option value="30">30 commits</option>
+            <option value="50" selected>50 commits</option>
+            <option value="100">100 commits</option>
+          </select>
+        </div>
+
+        <button 
+          id="generateBtn"
+          onclick="generateChangelog()"
+          class="w-full bg-spark-500 hover:bg-spark-600 text-white font-semibold py-3.5 rounded-xl transition flex items-center justify-center gap-2 text-sm"
+        >
+          <svg id="btnIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          <span id="btnText">Generate Changelog</span>
+        </button>
+
+        <p class="text-xs text-slate-500 text-center">
+          Works with public GitHub repos. Uses GitHub's public API (60 req/hour unauthenticated).
+        </p>
+      </div>
+    </div>
+
+    <!-- ERROR -->
+    <div id="errorBox" class="hidden bg-red-900/40 border border-red-500/40 rounded-xl p-4 mb-6 text-red-300 text-sm"></div>
+
+    <!-- RESULTS -->
+    <div id="resultSection" class="hidden fade-in">
+      <div class="bg-slate-900/60 backdrop-blur border border-white/10 rounded-2xl p-6 card-glow">
+        <div class="flex items-center justify-between mb-5">
+          <div>
+            <h2 class="text-lg font-semibold" id="resultTitle">Changelog</h2>
+            <p class="text-sm text-slate-400 mt-0.5" id="resultMeta"></p>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="copyMarkdown()" class="copy-btn bg-slate-700 hover:bg-slate-600 text-white text-sm px-4 py-2 rounded-lg transition flex items-center gap-1.5">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              Copy Markdown
+            </button>
+            <button onclick="downloadMarkdown()" class="copy-btn bg-spark-500 hover:bg-spark-600 text-white text-sm px-4 py-2 rounded-lg transition flex items-center gap-1.5">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              Download .md
+            </button>
+          </div>
+        </div>
+
+        <!-- RENDERED VIEW -->
+        <div id="renderedChangelog" class="space-y-5"></div>
+
+        <!-- RAW MARKDOWN TOGGLE -->
+        <div class="mt-6 pt-5 border-t border-white/10">
+          <button onclick="toggleRaw()" class="text-sm text-slate-400 hover:text-white transition flex items-center gap-1.5">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            Toggle raw Markdown
+          </button>
+          <pre id="rawMarkdown" class="hidden mt-4 bg-slate-800 rounded-xl p-4 text-xs text-slate-300 mono overflow-auto max-h-80 whitespace-pre-wrap"></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOW IT WORKS -->
+    <section id="how" class="mt-16 grid md:grid-cols-3 gap-6">
+      <div class="bg-slate-900/40 border border-white/10 rounded-xl p-6">
+        <div class="w-10 h-10 bg-spark-500/20 rounded-lg flex items-center justify-center mb-4">
+          <span class="text-spark-500 font-bold">1</span>
+        </div>
+        <h3 class="font-semibold mb-2">Paste Repo URL</h3>
+        <p class="text-sm text-slate-400">Works with any public GitHub repository. No login, no permissions needed.</p>
+      </div>
+      <div class="bg-slate-900/40 border border-white/10 rounded-xl p-6">
+        <div class="w-10 h-10 bg-spark-500/20 rounded-lg flex items-center justify-center mb-4">
+          <span class="text-spark-500 font-bold">2</span>
+        </div>
+        <h3 class="font-semibold mb-2">Choose Range</h3>
+        <p class="text-sm text-slate-400">Specify branches, tags, or commit SHAs. From v1.0.0 to HEAD — your call.</p>
+      </div>
+      <div class="bg-slate-900/40 border border-white/10 rounded-xl p-6">
+        <div class="w-10 h-10 bg-spark-500/20 rounded-lg flex items-center justify-center mb-4">
+          <span class="text-spark-500 font-bold">3</span>
+        </div>
+        <h3 class="font-semibold mb-2">Get Changelog</h3>
+        <p class="text-sm text-slate-400">Commits parsed by Conventional Commits spec, grouped by type, ready to ship.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-white/10 py-8 px-6 text-center text-sm text-slate-500">
+    <p>ReleaseSpark · Built by <a href="https://github.com/AlfonsoCifuentes" class="text-slate-400 hover:text-white transition">AlfonsoCifuentes</a> · 
+    <a href="https://github.com/AlfonsoCifuentes/releasespark" class="text-slate-400 hover:text-white transition">Open source</a></p>
+  </footer>
+
+  <script>
+    // ─── State ───────────────────────────────────────────────────────────────
+    let currentMarkdown = '';
+    let currentRepo = '';
+
+    // ─── Commit type config ──────────────────────────────────────────────────
+    const TYPES = {
+      feat:     { label: 'New Features',      cls: 'tag-feat',  emoji: '✨' },
+      fix:      { label: 'Bug Fixes',          cls: 'tag-fix',   emoji: '🐛' },
+      docs:     { label: 'Documentation',      cls: 'tag-docs',  emoji: '📖' },
+      style:    { label: 'Style',              cls: 'tag-style', emoji: '💅' },
+      refactor: { label: 'Refactoring',        cls: 'tag-chore', emoji: '♻️' },
+      perf:     { label: 'Performance',        cls: 'tag-perf',  emoji: '⚡' },
+      test:     { label: 'Tests',              cls: 'tag-test',  emoji: '✅' },
+      chore:    { label: 'Chores',             cls: 'tag-chore', emoji: '🔧' },
+      build:    { label: 'Build',              cls: 'tag-chore', emoji: '📦' },
+      ci:       { label: 'CI/CD',              cls: 'tag-chore', emoji: '⚙️' },
+      revert:   { label: 'Reverts',            cls: 'tag-fix',   emoji: '⏪' },
+      BREAKING: { label: 'Breaking Changes',   cls: 'tag-break', emoji: '💥' },
+      other:    { label: 'Other Changes',      cls: 'tag-chore', emoji: '📝' }
+    };
+
+    // ─── Parse commit message (Conventional Commits) ──────────────────────────
+    function parseCommit(msg, sha, authorName, date) {
+      // Check for breaking change
+      const isBreaking = msg.includes('BREAKING CHANGE') || msg.includes('!:');
+      
+      // Match conventional commit pattern
+      const ccMatch = msg.match(/^(\w+)(?:\(([^)]+)\))?(!)?:\s*(.+)/);
+      
+      let type = 'other';
+      let scope = null;
+      let description = msg.split('\n')[0].trim();
+
+      if (ccMatch) {
+        const rawType = ccMatch[1].toLowerCase();
+        scope = ccMatch[2] || null;
+        description = ccMatch[4] || description;
+        type = TYPES[rawType] ? rawType : 'other';
+        if (ccMatch[3] === '!') type = 'BREAKING';
+      }
+
+      if (isBreaking && type !== 'BREAKING') type = 'BREAKING';
+
+      return { type, scope, description, sha: sha.slice(0, 7), authorName, date };
+    }
+
+    // ─── Fetch commits from GitHub API ────────────────────────────────────────
+    async function fetchCommits(owner, repo, sha, maxCommits) {
+      const perPage = Math.min(maxCommits, 100);
+      const url = `https://api.github.com/repos/${owner}/${repo}/commits?sha=${sha}&per_page=${perPage}`;
+      
+      const res = await fetch(url, {
+        headers: { 'Accept': 'application/vnd.github+json' }
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || `GitHub API error ${res.status}`);
+      }
+
+      return res.json();
+    }
+
+    // ─── Parse repo URL ───────────────────────────────────────────────────────
+    function parseRepoUrl(url) {
+      const match = url.match(/github\.com\/([^/]+)\/([^/?\s]+)/);
+      if (!match) throw new Error('Invalid GitHub URL. Format: https://github.com/owner/repo');
+      return { owner: match[1], repo: match[2].replace(/\.git$/, '') };
+    }
+
+    // ─── Build Markdown ───────────────────────────────────────────────────────
+    function buildMarkdown(grouped, repoUrl, fromRef, toRef, repoSlug, commitCount, dateStr) {
+      let md = `# Changelog\n\n`;
+      md += `> Generated by [ReleaseSpark](https://releasespark.vercel.app) · ${dateStr}\n`;
+      md += `> Repository: [${repoSlug}](${repoUrl})\n`;
+      if (fromRef || toRef) {
+        md += `> Range: \`${fromRef || 'earliest'}\` → \`${toRef || 'HEAD'}\`\n`;
+      }
+      md += `> Total commits: ${commitCount}\n\n`;
+      md += `---\n\n`;
+
+      const ORDER = ['BREAKING', 'feat', 'fix', 'perf', 'refactor', 'docs', 'style', 'test', 'build', 'ci', 'chore', 'revert', 'other'];
+
+      for (const type of ORDER) {
+        if (!grouped[type] || grouped[type].length === 0) continue;
+        const t = TYPES[type];
+        md += `## ${t.emoji} ${t.label}\n\n`;
+        for (const c of grouped[type]) {
+          const scopePart = c.scope ? `**${c.scope}:** ` : '';
+          md += `- ${scopePart}${c.description} (\`${c.sha}\`)\n`;
+        }
+        md += '\n';
+      }
+
+      return md;
+    }
+
+    // ─── Render to DOM ────────────────────────────────────────────────────────
+    function renderToDOM(grouped, repoUrl, fromRef, toRef, repoSlug, commitCount) {
+      const container = document.getElementById('renderedChangelog');
+      container.innerHTML = '';
+
+      const ORDER = ['BREAKING', 'feat', 'fix', 'perf', 'refactor', 'docs', 'style', 'test', 'build', 'ci', 'chore', 'revert', 'other'];
+
+      let hasAny = false;
+      for (const type of ORDER) {
+        if (!grouped[type] || grouped[type].length === 0) continue;
+        hasAny = true;
+
+        const t = TYPES[type];
+        const section = document.createElement('div');
+        section.className = 'space-y-2';
+
+        const header = document.createElement('div');
+        header.className = 'flex items-center gap-2 mb-2';
+        header.innerHTML = `
+          <span class="text-base">${t.emoji}</span>
+          <h3 class="font-semibold text-sm uppercase tracking-wide text-slate-300">${t.label}</h3>
+          <span class="text-xs bg-slate-700 px-2 py-0.5 rounded-full text-slate-400">${grouped[type].length}</span>
+        `;
+        section.appendChild(header);
+
+        for (const c of grouped[type]) {
+          const item = document.createElement('div');
+          item.className = 'flex items-start gap-3 py-2 px-3 rounded-lg hover:bg-slate-800/40 transition group';
+          
+          const scopeHTML = c.scope 
+            ? `<span class="text-xs font-medium bg-slate-700/60 px-1.5 py-0.5 rounded text-slate-300 mr-1">${c.scope}</span>` 
+            : '';
+          
+          item.innerHTML = `
+            <div class="flex-1 min-w-0">
+              ${scopeHTML}<span class="text-sm text-slate-200">${escapeHtml(c.description)}</span>
+            </div>
+            <code class="text-xs text-slate-500 mono shrink-0 group-hover:text-slate-400">${c.sha}</code>
+          `;
+          section.appendChild(item);
+        }
+
+        container.appendChild(section);
+        
+        // Divider
+        if (ORDER.indexOf(type) < ORDER.length - 1) {
+          const divider = document.createElement('div');
+          divider.className = 'border-t border-white/5';
+          container.appendChild(divider);
+        }
+      }
+
+      if (!hasAny) {
+        container.innerHTML = `<p class="text-slate-400 text-sm text-center py-8">No commits matched the Conventional Commits format. All commits grouped under "Other Changes".</p>`;
+      }
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    // ─── Main generate function ───────────────────────────────────────────────
+    async function generateChangelog() {
+      const repoUrl = document.getElementById('repoUrl').value.trim();
+      const fromRef = document.getElementById('fromRef').value.trim();
+      const toRef = document.getElementById('toRef').value.trim() || 'HEAD';
+      const maxCommits = parseInt(document.getElementById('maxCommits').value);
+
+      // Clear previous state
+      document.getElementById('errorBox').classList.add('hidden');
+      document.getElementById('resultSection').classList.add('hidden');
+
+      if (!repoUrl) {
+        showError('Please enter a GitHub repository URL.');
+        return;
+      }
+
+      // Loading state
+      const btn = document.getElementById('generateBtn');
+      document.getElementById('btnText').textContent = 'Fetching commits...';
+      document.getElementById('btnIcon').innerHTML = '<circle cx="12" cy="12" r="9" stroke="white" stroke-width="2" fill="none" stroke-dasharray="28" stroke-dashoffset="10" style="animation: spin 1s linear infinite"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite"/></circle>';
+      btn.disabled = true;
+      btn.classList.add('opacity-70');
+
+      try {
+        const { owner, repo } = parseRepoUrl(repoUrl);
+        currentRepo = `${owner}/${repo}`;
+
+        const sha = toRef === 'HEAD' ? toRef : toRef;
+        const rawCommits = await fetchCommits(owner, repo, sha, maxCommits);
+
+        // Parse commits
+        const parsed = rawCommits.map(c => parseCommit(
+          c.commit.message,
+          c.sha,
+          c.commit.author?.name || 'Unknown',
+          c.commit.author?.date || ''
+        ));
+
+        // Group by type
+        const grouped = {};
+        for (const c of parsed) {
+          if (!grouped[c.type]) grouped[c.type] = [];
+          grouped[c.type].push(c);
+        }
+
+        const dateStr = new Date().toISOString().split('T')[0];
+        const repoSlug = `${owner}/${repo}`;
+        
+        currentMarkdown = buildMarkdown(grouped, repoUrl, fromRef, toRef, repoSlug, parsed.length, dateStr);
+
+        // Update UI
+        document.getElementById('resultTitle').textContent = `${owner}/${repo}`;
+        document.getElementById('resultMeta').textContent = `${parsed.length} commits · Range: ${fromRef || 'latest'} → ${toRef} · ${dateStr}`;
+        document.getElementById('rawMarkdown').textContent = currentMarkdown;
+
+        renderToDOM(grouped, repoUrl, fromRef, toRef, repoSlug, parsed.length);
+
+        document.getElementById('resultSection').classList.remove('hidden');
+
+        // Scroll to results
+        document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      } catch (err) {
+        showError(`Error: ${err.message}`);
+      } finally {
+        document.getElementById('btnText').textContent = 'Generate Changelog';
+        document.getElementById('btnIcon').innerHTML = '<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>';
+        btn.disabled = false;
+        btn.classList.remove('opacity-70');
+      }
+    }
+
+    function showError(msg) {
+      const box = document.getElementById('errorBox');
+      box.textContent = msg;
+      box.classList.remove('hidden');
+    }
+
+    async function copyMarkdown() {
+      if (!currentMarkdown) return;
+      await navigator.clipboard.writeText(currentMarkdown);
+      const btn = event.currentTarget;
+      const prev = btn.innerHTML;
+      btn.innerHTML = `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
+      btn.classList.add('bg-green-700');
+      setTimeout(() => { btn.innerHTML = prev; btn.classList.remove('bg-green-700'); }, 2000);
+    }
+
+    function downloadMarkdown() {
+      if (!currentMarkdown) return;
+      const blob = new Blob([currentMarkdown], { type: 'text/markdown' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `CHANGELOG-${currentRepo.replace('/', '-')}-${new Date().toISOString().split('T')[0]}.md`;
+      a.click();
+    }
+
+    function toggleRaw() {
+      const raw = document.getElementById('rawMarkdown');
+      raw.classList.toggle('hidden');
+    }
+
+    // Allow Enter key in inputs
+    ['repoUrl', 'fromRef', 'toRef'].forEach(id => {
+      document.getElementById(id).addEventListener('keydown', e => {
+        if (e.key === 'Enter') generateChangelog();
+      });
+    });
+  </script>
+</body>
+</html>
