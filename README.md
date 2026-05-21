@@ -1,35 +1,61 @@
 # ReleaseSpark
 
-> Turn GitHub commits into clean, organized changelogs instantly.
+> ReleaseSpark: herramienta pequeña, enfocada y orientada a resolver un problema concreto
 
-**Live:** https://releasespark.vercel.app
+## Resumen
 
-## Features
+Genera changelogs limpios a partir de commits de GitHub con una experiencia web ligera y sin configuracion.
 
-- Zero config — paste a GitHub repo URL and go
-- No login required for public repos
-- Parses [Conventional Commits](https://www.conventionalcommits.org/) spec automatically
-- Groups by type: Features, Bug Fixes, Docs, Breaking Changes, and more
-- Export as Markdown or copy to clipboard
-- Mobile responsive, dark theme, fast
+## Valor del proyecto
 
-## How it works
+Ayuda a demostrar criterio de producto, capacidad para recortar alcance y foco en construir soluciones pequeñas pero útiles.
 
-1. Paste any public GitHub repo URL
-2. Choose a branch, tag, or commit SHA range (optional)
-3. Get a formatted changelog grouped by commit type
+Este repositorio plantea una herramienta utilizable en escenarios reales, con foco en automatizacion, eficiencia operativa y calidad del flujo de trabajo.
 
-## Tech Stack
+## Funcionalidades o puntos fuertes
 
-- Vanilla HTML/CSS/JS (no build step)
-- GitHub REST API (public, unauthenticated for public repos)
-- Tailwind CSS (CDN)
-- Deployed on Vercel
+- Propuesta de valor inmediata y muy enfocada
+- Flujo de uso corto y fácil de entender
+- Narrativa de producto pensada para explicar utilidad real
+- Stack principal visible y coherente: GitHub, Changelog, Developer Tools y HTML.
 
-## Development
+## Stack principal
 
-Just open `index.html` — no build step needed.
+- GitHub
+- Changelog
+- Developer Tools
+- HTML
+- Creadas con OpenClaw
+- micro-SaaS
 
-## License
+## Como explorar este proyecto
 
-MIT
+- Identificar el problema concreto que automatiza o simplifica.
+- Revisar la logica principal, los flujos de entrada y las salidas que produce.
+- Evaluar como podria integrarse en un stack mayor o en un entorno de equipo.
+
+## Ficha rapida
+
+| Campo | Detalle |
+| --- | --- |
+| Repositorio | releasespark |
+| Categoria | Software Development |
+| Grupo | Herramientas |
+| Complejidad | Advanced |
+| Lenguaje principal | HTML |
+| Primera version | 9 de mayo de 2026 |
+| Ultima actualizacion | 12 de mayo de 2026 |
+
+## Enlaces
+
+- Demo en vivo: https://releasespark.vercel.app/
+- Repositorio: https://github.com/AlfonsoCifuentes/releasespark
+
+## Tags
+
+- Creadas con OpenClaw
+- micro-SaaS
+
+## Nota
+
+Este README se ha generado a partir del catalogo enriquecido del portfolio para mantener una descripcion consistente, explicativa y lista para evolucionar en cada repositorio.
